@@ -22,13 +22,8 @@ $(function () {
         return undefined;
     }
 
-    function intval(name, f) {
-        if(f) {
-            return parseFloat(document.getElementById(name).value);
-        }
-        else {
+    function intval(name) {
             return parseInt(document.getElementById(name).value);
-        }
     }
     
     function isSameColor(img, x, y, color) {
