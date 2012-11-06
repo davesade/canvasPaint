@@ -5,28 +5,7 @@ $(function () {
     var pencil = new toolPencil();
     var filler = new toolFiller();
 
-    // utility functions
-    function log(str) {
-        $('#log').append(str + "<br/>");
-    }
-
-    function findPos() {
-        var obj = document.getElementById('myCanvas');
-        var curleft = 0, curtop = 0;
-        if (obj.offsetParent) {
-            do {
-                curleft += obj.offsetLeft;
-                curtop += obj.offsetTop;
-            } while (obj = obj.offsetParent);
-            return { x: curleft, y: curtop };
-        }
-        return undefined;
-    }
-
-    function intval(name) {
-        return parseInt(document.getElementById(name).value);
-    }
-    
+    // pixel manipulation
     function isSameColor(img, x, y, color) {
         var data = img.data;
         var offset = ((y * (img.width * 4)) + (x * 4));
@@ -67,17 +46,22 @@ $(function () {
         var tool = this;
         this.touchstart = this.mousedown = function (ev) {
             // measure execution time
-            var start = new Date().getTime();
+            var stopWatch = new StopWatch();
+            stopWatch.start('global');
 
+            // init
+            stopWatch.start('init');
             var visited = new Array(W * H);
             var canvas = document.getElementById('myCanvas');
             var context = canvas.getContext('2d');
             var pos = findPos(this);
             var x = ev.pageX - pos.x;
             var y = ev.pageY - pos.y;
-            
             var img = context.getImageData(0, 0, W, H);
+            var initTime = stopWatch.stop('init');
             
+            // flood
+            stopWatch.start('flood');
             var hitColor = getPixelColor(img, x, y);
             var stack = [];
             stack.push({ x: x, y: y });
@@ -97,13 +81,19 @@ $(function () {
                     stack.push(c);
                 }
             }
+            var floodTime = stopWatch.stop('flood');
 
+            // put it back
+            stopWatch.start('putBack');
             context.putImageData(img, 0, 0);
+            var putBackTime = stopWatch.stop('putBack');
 
             // measure execution time
-            var end = new Date().getTime();
-            var time = end - start;
-            log('Fill execution time: ' + time + " ms");
+            var time = stopWatch.stop('global');
+            log('Total fill execution time: ' + time.delta() + " ms");
+            log('Init execution time: ' + initTime.delta() + " ms");
+            log('Flood fill execution time: ' + floodTime.delta() + " ms");
+            log('Put data back execution time: ' + putBackTime.delta() + " ms");
         };
     }
     
