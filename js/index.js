@@ -24,7 +24,7 @@ $(function () {
     }
 
     function intval(name) {
-            return parseInt(document.getElementById(name).value);
+        return parseInt(document.getElementById(name).value);
     }
     
     function isSameColor(img, x, y, color) {
@@ -65,7 +65,7 @@ $(function () {
         var dy = [0, -1, 0, +1];
 
         var tool = this;
-        this.mousedown = function (ev) {
+        this.touchstart = this.mousedown = function (ev) {
             // measure execution time
             var start = new Date().getTime();
 
@@ -114,7 +114,7 @@ $(function () {
 
         // This is called when you start holding down the mouse button.
         // This starts the pencil drawing.
-        this.mousedown = function (ev) {
+        this.touchstart = this.mousedown = function (ev) {
             var canvas = document.getElementById('myCanvas');
             var context = canvas.getContext('2d');
             context.beginPath();
@@ -128,7 +128,7 @@ $(function () {
         // This function is called every time you move the mouse. Obviously, it only 
         // draws if the tool.started state is set to true (when you are holding down 
         // the mouse button).
-        this.mousemove = function (ev) {
+        this.touchmove = this.mousemove = function (ev) {
             var canvas = document.getElementById('myCanvas');
             var context = canvas.getContext('2d');
             if (tool.started) {
@@ -143,7 +143,7 @@ $(function () {
         };
 
         // This is called when you release the mouse button.
-        this.mouseup = function (ev) {
+        this.touchend = this.mouseup = function (ev) {
             if (tool.started) {
                 tool.mousemove(ev);
                 tool.started = false;
