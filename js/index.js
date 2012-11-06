@@ -34,8 +34,9 @@ $(function () {
           || (data[offset + 1]) != ((color >> 16) & 0xFF)
           || (data[offset + 2]) != ((color >> 8) & 0xFF)
             //|| (data[offset + 3]) != (color & 0xFF)
-        )
+            ) {
             return false;
+        }
         return true;
     }
     
