@@ -5,6 +5,7 @@ $(function () {
     var pencil = new toolPencil();
     var filler = new toolFiller();
 
+    // utility functions
     function log(str) {
         $('#log').append(str + "<br/>");
     }
@@ -57,7 +58,7 @@ $(function () {
         //data[offset + 3] = (color >>  0) & 0xFF;
     }
 
-
+    // flood fill tool
     function toolFiller() {
         var dx = [-1, 0, +1, 0];
         var dy = [0, -1, 0, +1];
@@ -105,6 +106,7 @@ $(function () {
         };
     }
     
+    // pencil tool
     function toolPencil() {
         var tool = this;
         this.started = false;
