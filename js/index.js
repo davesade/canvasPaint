@@ -89,19 +89,24 @@ $(function () {
             var y = ev.pageY - pos.y;
             var img = context.getImageData(0, 0, W, H);
             
+            var visited = new Array(W * H); // visited pixels map
+            
             var hitColor = getPixelColor(img, x, y);
             var stack = [];
             stack.push({ x: x, y: y });
             var newColor = (intval('red') << 24) | (intval('green') << 16) | (intval('blue') << 8);
             setPixelColor(img, x, y, newColor);
+            visited[x*W + y] = true; // mark as visited
             while (stack.length > 0) {
                 var cur = stack.pop();
 
                 for (var i = 0; i < 4; i++) {
-                    if (cur.x + dx[i] < 0 || cur.y + dy[i] < 0 || cur.x + dx[i] >= W || cur.y + dy[i] >= H || !isSameColor(img, cur.x + dx[i], cur.y + dy[i], hitColor)) {
+                    var pixelHash = (cur.x + dx[i])*W + cur.y + dy[i];
+                    if (cur.x + dx[i] < 0 || cur.y + dy[i] < 0 || cur.x + dx[i] >= W || cur.y + dy[i] >= H || visited[pixelHash] || !isSameColor(img, cur.x + dx[i], cur.y + dy[i], hitColor)) {
                         continue;
                     }
                     setPixelColor(img, cur.x + dx[i], cur.y + dy[i], newColor);
+                    visited[pixelHash] = true; // mark as visited
                     stack.push({ x: cur.x + dx[i], y: cur.y + dy[i]});
                 }
             }
