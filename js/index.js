@@ -44,9 +44,7 @@ $(function () {
         var offset = ((y * (img.width * 4)) + (x * 4));
         if ((data[offset + 0]) != ((color >> 24) & 0xFF)
           || (data[offset + 1]) != ((color >> 16) & 0xFF)
-          || (data[offset + 2]) != ((color >> 8) & 0xFF)
-          //  || (data[offset + 3]) != (color & 0xFF)
-            ) {
+          || (data[offset + 2]) != ((color >> 8) & 0xFF)) {
             return false;
         }
         return true;
@@ -100,7 +98,7 @@ $(function () {
                 var cur = stack.pop();
 
                 for (var i = 0; i < 4; i++) {
-                    if (cur.x + dx[i] < 0 || cur.y + dy[i] < 0 || cur.x + dx[i] >= W || cur.y + dy[i] >= H || getPixelColor(img, cur.x + dx[i], cur.y + dy[i]) != hitColor) {
+                    if (cur.x + dx[i] < 0 || cur.y + dy[i] < 0 || cur.x + dx[i] >= W || cur.y + dy[i] >= H || !isSameColor(img, cur.x + dx[i], cur.y + dy[i], hitColor)) {
                         continue;
                     }
                     setPixelColor(img, cur.x + dx[i], cur.y + dy[i], newColor);
