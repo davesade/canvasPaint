@@ -6,6 +6,7 @@ $(function () {
     var filler = new toolFiller();
 
     // pixel manipulation
+    /* FINAL IMPLEMENTATION:
     function isSameColor(img, x, y, color) {
         var data = img.data;
         var offset = ((y * (img.width * 4)) + (x * 4));
@@ -37,6 +38,36 @@ $(function () {
         data[offset + 2] = (color >>  8) & 0xFF;
         //data[offset + 3] = (color >>  0) & 0xFF;
     }
+    */
+    function isSameColor(img, x, y, color) {
+        var data = img.data;
+        var offset = ((y * (img.width * 4)) + (x * 4));
+        if ((data[offset + 0]) != ((color >> 24) & 0xFF)
+          || (data[offset + 1]) != ((color >> 16) & 0xFF)
+          || (data[offset + 2]) != ((color >> 8) & 0xFF)
+          //  || (data[offset + 3]) != (color & 0xFF)
+            ) {
+            return false;
+        }
+        return true;
+    }
+    
+    // The CanvasPixelArray object indicates the color components of each pixel of an image, 
+    // first for each of its three RGB values in order (0-255) and then its alpha component (0-255), 
+    // proceeding from left-to-right, for each row (rows are top to bottom).
+    // That's why we have to assign each color component separately. 
+    function getPixelColor(img, x, y) {
+        var result = img.data[((y * (img.width * 4)) + (x * 4)) + 0] << 24; // r
+        result |= img.data[((y * (img.width * 4)) + (x * 4)) + 1] << 16; // g
+        result |= img.data[((y * (img.width * 4)) + (x * 4)) + 2] << 8; // b
+        return result;
+    }
+    
+    function setPixelColor(img, x, y, color) {
+        img.data[((y * (img.width * 4)) + (x * 4)) + 0] = (color >> 24) & 0xFF;
+        img.data[((y * (img.width * 4)) + (x * 4)) + 1] = (color >> 16) & 0xFF;
+        img.data[((y * (img.width * 4)) + (x * 4)) + 2] = (color >>  8) & 0xFF;
+    }
 
     // flood fill tool
     function toolFiller() {
@@ -49,6 +80,32 @@ $(function () {
             var stopWatch = new StopWatch();
             stopWatch.start('global');
 
+            var canvas = document.getElementById('myCanvas');
+            var context = canvas.getContext('2d');
+            var pos = findPos(this); // get cursor hit point position
+            var x = ev.pageX - pos.x;
+            var y = ev.pageY - pos.y;
+            var img = context.getImageData(0, 0, W, H);
+            
+            var hitColor = getPixelColor(img, x, y);
+            var stack = [];
+            stack.push({ x: x, y: y });
+            var newColor = (intval('red') << 24) | (intval('green') << 16) | (intval('blue') << 8);
+            setPixelColor(img, x, y, newColor);
+            while (stack.length > 0) {
+                var cur = stack.pop();
+
+                for (var i = 0; i < 4; i++) {
+                    if (cur.x + dx[i] < 0 || cur.y + dy[i] < 0 || cur.x + dx[i] >= W || cur.y + dy[i] >= H || getPixelColor(img, cur.x + dx[i], cur.y + dy[i]) != hitColor) {
+                        continue;
+                    }
+                    setPixelColor(img, cur.x + dx[i], cur.y + dy[i], newColor);
+                    stack.push({ x: cur.x + dx[i], y: cur.y + dy[i]});
+                }
+            }
+
+            context.putImageData(img, 0, 0);
+/* FINAL IMPLEMENTATION:
             // init
             stopWatch.start('init');
             var visited = new Array(W * H);
@@ -87,13 +144,13 @@ $(function () {
             stopWatch.start('putBack');
             context.putImageData(img, 0, 0);
             var putBackTime = stopWatch.stop('putBack');
-
+*/
             // measure execution time
             var time = stopWatch.stop('global');
             log('Total fill execution time: ' + time.delta() + " ms");
-            log('Init execution time: ' + initTime.delta() + " ms");
-            log('Flood fill execution time: ' + floodTime.delta() + " ms");
-            log('Put data back execution time: ' + putBackTime.delta() + " ms");
+            //log('Init execution time: ' + initTime.delta() + " ms");
+            //log('Flood fill execution time: ' + floodTime.delta() + " ms");
+            //log('Put data back execution time: ' + putBackTime.delta() + " ms");
         };
     }
     
