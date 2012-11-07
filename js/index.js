@@ -98,12 +98,11 @@ $(function () {
                 var cur = stack.pop();
 
                 for (var i = 0; i < 4; i++) {
-                    var p = { x: cur.x + dx[i], y: cur.y + dy[i]};
-                    if (p.x < 0 || p.y < 0 || p.x >= W || p.y >= H || !isSameColor(img, p.x, p.y, hitColor)) {
+                    if (cur.x + dx[i] < 0 || cur.y + dy[i] < 0 || cur.x + dx[i] >= W || cur.y + dy[i] >= H || !isSameColor(img, cur.x + dx[i], cur.y + dy[i], hitColor)) {
                         continue;
                     }
-                    setPixelColor(img, p.x, p.y, newColor);
-                    stack.push(p);
+                    setPixelColor(img, cur.x + dx[i], cur.y + dy[i], newColor);
+                    stack.push({ x: cur.x + dx[i], y: cur.y + dy[i]});
                 }
             }
 
