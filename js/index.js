@@ -57,16 +57,20 @@ $(function () {
     // proceeding from left-to-right, for each row (rows are top to bottom).
     // That's why we have to assign each color component separately. 
     function getPixelColor(img, x, y) {
-        var result = img.data[((y * (img.width * 4)) + (x * 4)) + 0] << 24; // r
-        result |= img.data[((y * (img.width * 4)) + (x * 4)) + 1] << 16; // g
-        result |= img.data[((y * (img.width * 4)) + (x * 4)) + 2] << 8; // b
+        var data = img.data;
+        var offset = ((y * (img.width * 4)) + (x * 4));
+        var result = data[offset + 0] << 24; // r
+        result |= data[offset + 1] << 16; // g
+        result |= data[offset + 2] << 8; // b
         return result;
     }
     
     function setPixelColor(img, x, y, color) {
-        img.data[((y * (img.width * 4)) + (x * 4)) + 0] = (color >> 24) & 0xFF;
-        img.data[((y * (img.width * 4)) + (x * 4)) + 1] = (color >> 16) & 0xFF;
-        img.data[((y * (img.width * 4)) + (x * 4)) + 2] = (color >>  8) & 0xFF;
+        var data = img.data;
+        var offset = ((y * (img.width * 4)) + (x * 4));
+        data[offset + 0] = (color >> 24) & 0xFF;
+        data[offset + 1] = (color >> 16) & 0xFF;
+        data[offset + 2] = (color >>  8) & 0xFF;
     }
 
     // flood fill tool
