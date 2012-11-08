@@ -64,8 +64,7 @@ $(function () {
                 var cur = stack.pop();
 
                 for (var i = 0; i < 4; i++) {
-                    var pixelHash = (cur.x + dx[i])*W + cur.y + dy[i];
-                   if (cur.x + dx[i] < 0 || cur.y + dy[i] < 0 || cur.x + dx[i] >= W || cur.y + dy[i] >= H || !isSameColor(img, cur.x + dx[i], cur.y + dy[i], hitColor)) {
+                    if (cur.x + dx[i] < 0 || cur.y + dy[i] < 0 || cur.x + dx[i] >= W || cur.y + dy[i] >= H || !isSameColor(img, cur.x + dx[i], cur.y + dy[i], hitColor)) {
                         continue;
                     }
                     setPixelColor(img, cur.x + dx[i], cur.y + dy[i], newColor);
