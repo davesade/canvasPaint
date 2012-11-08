@@ -56,19 +56,28 @@ $(function () {
             var img = context.getImageData(0, 0, W, H);
             
             var hitColor = getPixelColor(img, x, y);
+            
             var stack = [];
-            stack.push({ x: x, y: y });
+            stack.push(x);
+            stack.push(y);
+
             var newColor = (intval('red') << 24) | (intval('green') << 16) | (intval('blue') << 8);
             setPixelColor(img, x, y, newColor);
             while (stack.length > 0) {
-                var cur = stack.pop();
+                var curPointY = stack.pop();
+                var curPointX = stack.pop();
 
                 for (var i = 0; i < 4; i++) {
-                    if (cur.x + dx[i] < 0 || cur.y + dy[i] < 0 || cur.x + dx[i] >= W || cur.y + dy[i] >= H || !isSameColor(img, cur.x + dx[i], cur.y + dy[i], hitColor)) {
+                    var nextPointX = curPointX + dx[i];
+                    var nextPointY = curPointY + dy[i];
+
+                    if (nextPointX < 0 || nextPointY < 0 || nextPointX >= W || nextPointY >= H || !isSameColor(img, nextPointX, nextPointY, hitColor)) {
                         continue;
                     }
-                    setPixelColor(img, cur.x + dx[i], cur.y + dy[i], newColor);
-                    stack.push({ x: cur.x + dx[i], y: cur.y + dy[i]});
+                    setPixelColor(img, nextPointX, nextPointY, newColor);
+                    
+                    stack.push(nextPointX);
+                    stack.push(nextPointY);
                 }
             }
 
