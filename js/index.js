@@ -39,6 +39,7 @@ $(function () {
 
     // flood fill tool
     function toolFiller() {
+        // BUG: infinite recursion when the area is already filled with the active color.
 
         // Putting the offsets in such an order as to minimize the
         // possibility of cache miss during array access.
