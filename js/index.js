@@ -72,31 +72,26 @@ $(function () {
                 var curPointX = stack.pop();
 
                 for (var i = 0; i < 4; i++) {
-
-                    var isContiguousPixel = false;
                     var nextPointX = curPointX + dx[i];
                     var nextPointY = curPointY + dy[i];
 
+                    if (nextPointX < 0 || nextPointY < 0 || nextPointX >= W || nextPointY >= H) {
+                        continue;
+                    }
                     // Inline implementation of isSameColor.
                     var nextPointOffset = (nextPointY * W + nextPointX) * 4;
                     if (imgData[nextPointOffset + 0] == ((hitColor >> 24) & 0xFF)
                         && imgData[nextPointOffset + 1] == ((hitColor >> 16) & 0xFF) 
                         && imgData[nextPointOffset + 2] == ((hitColor >> 8) & 0xFF))
                     {
-                        isContiguousPixel = true;
+                        // Inline implementation of setPixelColor.
+                        imgData[nextPointOffset + 0] = (newColor >> 24) & 0xFF;
+                        imgData[nextPointOffset + 1] = (newColor >> 16) & 0xFF;
+                        imgData[nextPointOffset + 2] = (newColor >>  8) & 0xFF;
+
+                        stack.push(nextPointX);
+                        stack.push(nextPointY);
                     }
-
-                    if (nextPointX < 0 || nextPointY < 0 || nextPointX >= W || nextPointY >= H || !isContiguousPixel) {
-                        continue;
-                    }
-
-                    // Inline implementation of setPixelColor.
-                    imgData[nextPointOffset + 0] = (newColor >> 24) & 0xFF;
-                    imgData[nextPointOffset + 1] = (newColor >> 16) & 0xFF;
-                    imgData[nextPointOffset + 2] = (newColor >>  8) & 0xFF;
-
-                    stack.push(nextPointX);
-                    stack.push(nextPointY);
                 }
             }
 
