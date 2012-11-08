@@ -39,8 +39,10 @@ $(function () {
 
     // flood fill tool
     function toolFiller() {
-        var dx = [-1, 0, +1, 0];
-        var dy = [0, -1, 0, +1];
+        // Putting the offsets in such an order as to minimize the
+        // possibility of cache miss during array access.
+        var dx = [ 0, -1, +1,  0];
+        var dy = [-1,  0,  0, +1];
 
         var tool = this;
         this.touchstart = this.mousedown = function (ev) {
@@ -54,6 +56,7 @@ $(function () {
             var x = ev.pageX - pos.x;
             var y = ev.pageY - pos.y;
             var img = context.getImageData(0, 0, W, H);
+            var imgData = img.data;
             
             var hitColor = getPixelColor(img, x, y);
             
@@ -68,14 +71,28 @@ $(function () {
                 var curPointX = stack.pop();
 
                 for (var i = 0; i < 4; i++) {
+                    var isContiguousPixel = false;
                     var nextPointX = curPointX + dx[i];
                     var nextPointY = curPointY + dy[i];
 
-                    if (nextPointX < 0 || nextPointY < 0 || nextPointX >= W || nextPointY >= H || !isSameColor(img, nextPointX, nextPointY, hitColor)) {
+                    // Inline implementation of isSameColor.
+                    var nextPointOffset = (nextPointY * W + nextPointX) * 4;
+                    if (imgData[nextPointOffset + 0] == ((hitColor >> 24) & 0xFF)
+                        && imgData[nextPointOffset + 1] == ((hitColor >> 16) & 0xFF) 
+                        && imgData[nextPointOffset + 2] == ((hitColor >> 8) & 0xFF))
+                    {
+                        isContiguousPixel = true;
+                    }
+
+                    if (nextPointX < 0 || nextPointY < 0 || nextPointX >= W || nextPointY >= H || !isContiguousPixel) {
                         continue;
                     }
-                    setPixelColor(img, nextPointX, nextPointY, newColor);
-                    
+
+                    // Inline implementation of setPixelColor.
+                    imgData[nextPointOffset + 0] = (newColor >> 24) & 0xFF;
+                    imgData[nextPointOffset + 1] = (newColor >> 16) & 0xFF;
+                    imgData[nextPointOffset + 2] = (newColor >>  8) & 0xFF;
+
                     stack.push(nextPointX);
                     stack.push(nextPointY);
                 }
